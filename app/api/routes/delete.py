@@ -20,7 +20,7 @@ class Delete(Resource):
             # Retrieve the args
             username = args["username"]
             password = args["password"]
-            query_filter = args.get("query_filter", {})
+            query_filter = args.get("query", {})
 
             # Create the mongodb class
             mongo = Mongo(
