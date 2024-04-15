@@ -7,19 +7,19 @@ from app.api.responses.errors import ErrorOps as Error
 
 class Save(Resource):
     @require_credentials
-    def get(self, database: str, collection: str):
-        return {"message": "GET request not allowed on this route."}, 405
-
-    @require_credentials
     @marshal_with(WriteOps.wo_fields)
-    def post(self, database: str, collection: str):
+    def post(self, **kwargs):
         try:
             # Get the arguments passed
             args = request.json
 
+            # Retrieve the kwargs
+            database = kwargs["database"]
+            collection = kwargs["collection"]
+            username = kwargs["username"]
+            password = kwargs["password"]
+
             # Retrieve the args
-            username = args["username"]
-            password = args["password"]
             documents = args.get("documents", None)
 
             # Verify if document is not empty

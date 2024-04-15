@@ -18,4 +18,4 @@ class ErrorOps(object):
         self.success = False
 
     def response(self):
-        return {"message": self.message, "success": self.message}
+        return {"message": self.message, "success": self.success}
