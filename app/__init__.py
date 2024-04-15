@@ -26,7 +26,4 @@ def page_not_found(e):
 @marshal_with(Error.error_fields)
 def page_bad_request(e):
     # * Create a new error object and return it
-    return Error(
-        message="You've sent a bad request.",
-        code=400,
-    ), 400
+    return Error(message="You've sent a bad request."), 400

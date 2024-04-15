@@ -13,14 +13,18 @@ class FetchAll(Resource):
     PER_PAGE = 10
 
     @require_credentials
-    def get(self, database: str, collection: str):
+    def get(self, **kwargs):
         try:
             # Get the arguments passed
             args = request.json
 
+            # Retrieve the kwargs
+            database = kwargs["database"]
+            collection = kwargs["collection"]
+            username = kwargs["username"]
+            password = kwargs["password"]
+
             # Retrieve the args
-            username = args["username"]
-            password = args["password"]
             page = args.get("page", 1)
             query_filter = args.get("query", {})
 
@@ -76,14 +80,18 @@ class FetchAll(Resource):
 
 
 class FetchOne(Resource):
-    def get(self, database: str, collection: str):
+    def get(self, **kwargs):
         try:
             # Get the arguments passed
             args = request.json
 
+            # Retrieve the kwargs
+            database = kwargs["database"]
+            collection = kwargs["collection"]
+            username = kwargs["username"]
+            password = kwargs["password"]
+
             # Retrieve the args
-            username = args["username"]
-            password = args["password"]
             query_filter = args["query"] if "query" in args else {}
 
             # Create the mongodb class
