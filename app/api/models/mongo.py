@@ -1,3 +1,4 @@
+import os
 from pymongo import MongoClient
 
 
@@ -11,7 +12,7 @@ class Mongo:
     ) -> None:
         # Create a mongodb connection
         mongo = MongoClient(
-            host="mongo.mervinhemaraju.com",
+            host=os.environ["DB_HOST"],
             # tls=True,
             # tlsAllowInvalidCertificates=False,
             # tlsCAFile=db_ca_file,

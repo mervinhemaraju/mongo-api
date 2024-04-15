@@ -1,6 +1,8 @@
 from flask_restful import Resource, request, marshal_with
 from app.api.models.auth import require_credentials
 from app.api.models.mongo import Mongo
+from app.api.responses.write_ops import WriteOps
+from app.api.responses.errors import ErrorOps as Error
 
 
 class Save(Resource):
@@ -9,6 +11,7 @@ class Save(Resource):
         return {"message": "GET request not allowed on this route."}, 405
 
     @require_credentials
+    @marshal_with(WriteOps.wo_fields)
     def post(self, database: str, collection: str):
         try:
             # Get the arguments passed
@@ -34,10 +37,11 @@ class Save(Resource):
             # Save the documents
             result = mongo.collection.insert_many(documents)
 
-            return {
-                "message": "Documents saved successfully.",
-                "count": len(result.inserted_ids),
-                "success": True,
-            }, 200
+            # Create a new response and return it
+            return WriteOps(
+                message="Documents saved successfully.", count=len(result.inserted_ids)
+            ), 200
+
         except Exception as e:
-            return {"message": str(e), "success": False}, 500
+            # Create a new error response and return it
+            return Error(str(e)), 500

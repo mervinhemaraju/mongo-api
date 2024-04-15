@@ -1,8 +1,11 @@
 from math import ceil
-from flask_restful import Resource, request, marshal_with
+from flask_restful import Resource, request
 from app.api.models.mongo import Mongo
 from app.api.models.auth import require_credentials
 from pymongo.errors import OperationFailure
+from app.api.responses.errors import ErrorOps as Error
+from app.api.responses.fetch_one import FetchOneOutput
+from app.api.responses.fetch_all import FetchAllOutput
 
 
 class FetchAll(Resource):
@@ -45,24 +48,31 @@ class FetchAll(Resource):
             # Get the total pages
             total_pages = ceil(total_documents / self.PER_PAGE)
 
-            return {
-                "data": list(data),
-                "page": page,
-                "total_pages": total_pages,
-                "total_documents": total_documents,
-                "success": True,
-            }, 200
+            # Create a new response and return it
+            return FetchAllOutput(
+                data=list(data),
+                total_pages=total_pages,
+                page=page,
+                total_documents=total_documents,
+                success=True,
+            ).response(), 200
 
         except OperationFailure as of:
             if of.code == 18:
-                return {"message": "Authentication failed.", "success": False}, 401
+                # Create a new error response and return it
+                return Error(
+                    message="Authentication failed.",
+                ).response(), 401
             else:
-                return {
-                    "message": f"An error occurred: {of}",
-                    "success": False,
-                }, 500
+                # Create a new error response and return it
+                return Error(
+                    message=f"An error occurred: {of}",
+                ).response(), 500
         except Exception as e:
-            return {"message": f"An error occurred: {e}", "success": False}, 500
+            # Create a new error response and return it
+            return Error(
+                message=f"An error occurred: {e}",
+            ).response(), 500
 
 
 class FetchOne(Resource):
@@ -85,23 +95,31 @@ class FetchOne(Resource):
             )
 
             # Retrieve the data
-            data = mongo.collection.find(query_filter, {"_id": 0}).limit(1)
+            data = list(mongo.collection.find(query_filter, {"_id": 0}).limit(1))
 
+            # If no data wa found, raise an exception
             if len(data) < 1:
                 raise OperationFailure("No data found for this filter")
 
-            return {
-                "data": data[0],
-                "success": True,
-            }, 200
+            # Create a new output and return it
+            return FetchOneOutput(
+                data=data[0],
+                success=True,
+            ).response(), 200
 
         except OperationFailure as of:
             if of.code == 18:
-                return {"message": "Authentication failed.", "success": False}, 401
+                # Create a new error response and return it
+                return Error(
+                    message="Authentication failed.",
+                ).response(), 401
             else:
-                return {
-                    "message": f"An error occurred: {of}",
-                    "success": False,
-                }, 500
+                # Create a new error response and return it
+                return Error(
+                    message=f"An error occurred: {of}",
+                ).response(), 500
         except Exception as e:
-            return {"message": f"An error occurred: {e}", "success": False}, 500
+            # Create a new error response and return it
+            return Error(
+                message=f"An error occurred: {e}",
+            ).response(), 500
