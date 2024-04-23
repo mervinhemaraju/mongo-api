@@ -3,8 +3,6 @@ from app.api.v1 import v1_blueprint
 from app.api.responses.errors import ErrorGeneral as Error
 from flask_restful import marshal_with
 
-# from flask_restful import marshal_with
-
 # * Create a Flask Application
 app = Flask(__name__)
 
