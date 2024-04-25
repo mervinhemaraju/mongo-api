@@ -27,6 +27,7 @@ class FetchAll(Resource):
             # Retrieve the args
             page = args.get("page", 1)
             query_filter = args.get("query", {})
+            sort = args.get("sort", [])
 
             # Create the mongodb class
             mongo = Mongo(
@@ -43,6 +44,7 @@ class FetchAll(Resource):
             data = (
                 mongo.collection.find(query_filter, {"_id": 0})
                 .skip(skip)
+                .sort(sort)
                 .limit(self.PER_PAGE)
             )
 
