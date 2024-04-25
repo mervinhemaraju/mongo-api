@@ -10,7 +10,7 @@ from app.api.responses.fetch_all import FetchAllOutput
 
 class FetchAll(Resource):
     # Define a PER_PAGE total
-    PER_PAGE = 10
+    PER_PAGE = 20
 
     @require_credentials
     def get(self, **kwargs):
@@ -27,6 +27,7 @@ class FetchAll(Resource):
             # Retrieve the args
             page = args.get("page", 1)
             query_filter = args.get("query", {})
+            sort = args.get("sort", [])
 
             # Create the mongodb class
             mongo = Mongo(
@@ -43,6 +44,7 @@ class FetchAll(Resource):
             data = (
                 mongo.collection.find(query_filter, {"_id": 0})
                 .skip(skip)
+                .sort(sort)
                 .limit(self.PER_PAGE)
             )
 
@@ -57,6 +59,7 @@ class FetchAll(Resource):
                 data=list(data),
                 total_pages=total_pages,
                 page=page,
+                per_page=self.PER_PAGE,
                 total_documents=total_documents,
                 success=True,
             ).response(), 200
