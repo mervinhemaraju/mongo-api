@@ -44,7 +44,6 @@ class FetchAll(Resource):
             data = (
                 mongo.collection.find(query_filter, {"_id": 0})
                 .skip(skip)
-                .sort(sort)
                 .limit(self.PER_PAGE)
             )
 
