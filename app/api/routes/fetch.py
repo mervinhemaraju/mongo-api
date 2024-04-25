@@ -27,7 +27,7 @@ class FetchAll(Resource):
             # Retrieve the args
             page = args.get("page", 1)
             query_filter = args.get("query", {})
-            sort = args.get("sort", [])
+            sort = args.get("sort", None)
 
             # Create the mongodb class
             mongo = Mongo(
@@ -47,6 +47,10 @@ class FetchAll(Resource):
                 .sort(sort)
                 .limit(self.PER_PAGE)
             )
+
+            # Add sorting if it was requested
+            if sort:
+                data = data.sort(sort)
 
             # Get the total documents
             total_documents = mongo.collection.count_documents(query_filter)
